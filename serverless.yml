@@ -62,6 +62,9 @@ custom:
     sourcemap: true
     target: node20
     platform: node
+    # 46 fonctions packagées individuellement : en parallèle illimité, esbuild dépasse la mémoire
+    # d'un build CodeBuild SMALL (3 Go) et meurt avec "write EPIPE".
+    concurrency: 3
     exclude:
       - '@aws-sdk/*'
 
