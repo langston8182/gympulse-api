@@ -45,7 +45,8 @@ const set = (reps: number, weightKg: number) => ({ reps, weightKg, completedAt: 
 
 describe('catalogue (intégration)', () => {
   it('crée lieux, séances, programmes et les relie', async () => {
-    const loc = json(await createLocation(buildEvent({ body: { name: 'Salle', type: 'GYM', latitude: 48.85, longitude: 2.36, equipment: ['BARBELL'] } })));
+    const loc = json(await createLocation(buildEvent({ body: { name: 'Salle', address: '10 rue de Rivoli, Paris', type: 'GYM', latitude: 48.85, longitude: 2.36, equipment: ['BARBELL'] } })));
+    expect(loc.address).toBe('10 rue de Rivoli, Paris');
     const custom = json(await createExercise(buildEvent({ body: { name: 'Mon exo', muscleGroups: ['CHEST'] } })));
 
     const sessionRes = await createSession(buildEvent({

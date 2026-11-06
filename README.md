@@ -52,7 +52,7 @@ infra/                # buildspecs CodeBuild
 | PUT | `/sessions/{id}/favorite` | `{favorite}` |
 | GET, POST | `/programs` | Programmes |
 | GET, PUT, DELETE | `/programs/{id}` | |
-| GET, POST | `/locations` | Lieux |
+| GET, POST | `/locations` | Lieux (nom, adresse facultative, position, rayon, type, matériel) |
 | GET, PUT, DELETE | `/locations/{id}` | Nettoie les liens et le choix manuel |
 | PUT | `/locations/{id}/sessions` | `{sessionRefs}` remplace les séances liées |
 | PUT | `/locations/{id}/programs` | `{programRefs}` remplace les programmes liés |

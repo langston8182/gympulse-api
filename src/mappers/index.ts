@@ -62,6 +62,7 @@ export function locationToDto(doc: any) {
   return {
     ref: id(doc._id),
     name: doc.name,
+    address: doc.address ?? '',
     latitude: doc.latitude ?? null,
     longitude: doc.longitude ?? null,
     radiusMeters: doc.radiusMeters,

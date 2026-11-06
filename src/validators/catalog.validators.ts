@@ -82,6 +82,7 @@ export function validateLocation(body: Body, partial: boolean) {
   const c = new Checker();
   const data = {
     name: c.string(body, 'name', { required: !partial, min: 1, max: 120 }),
+    address: c.string(body, 'address', { max: 300 }),
     latitude: c.number(body, 'latitude', { min: -90, max: 90, nullable: true }),
     longitude: c.number(body, 'longitude', { min: -180, max: 180, nullable: true }),
     radiusMeters: c.number(body, 'radiusMeters', { integer: true, min: 10, max: 5000 }) as number | undefined,

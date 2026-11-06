@@ -5,6 +5,7 @@ export interface ILocation {
   _id: Types.ObjectId;
   userId: string;
   name: string;
+  address: string;
   latitude: number | null;
   longitude: number | null;
   radiusMeters: number;
@@ -19,6 +20,7 @@ const LocationSchema = new Schema<ILocation>(
   {
     userId: { type: String, required: true, index: true },
     name: { type: String, required: true, trim: true, minlength: 1, maxlength: 120 },
+    address: { type: String, trim: true, maxlength: 300, default: '' },
     latitude: { type: Number, min: -90, max: 90, default: null },
     longitude: { type: Number, min: -180, max: 180, default: null },
     radiusMeters: { type: Number, min: 10, max: 5000, default: 150 },
