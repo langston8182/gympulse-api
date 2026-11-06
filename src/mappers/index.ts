@@ -38,6 +38,7 @@ export function sessionToDto(doc: any) {
     })),
     locationRefs: doc.locationRefs ?? [],
     favorite: !!doc.favorite,
+    order: doc.order ?? 0,
     isDemo: !!doc.isDemo,
     createdAt: iso(doc.createdAt),
     updatedAt: iso(doc.updatedAt),

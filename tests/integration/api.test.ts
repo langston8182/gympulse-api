@@ -83,6 +83,15 @@ describe('catalogue (intégration)', () => {
     expect(res2.statusCode).toBe(400);
   });
 
+  it("renvoie les séances dans l'ordre choisi par l'utilisateur et accepte le but force-hypertrophie", async () => {
+    await createSession(buildEvent({ body: { name: 'B', order: 1, goal: 'STRENGTH_HYPERTROPHY' } }));
+    await createSession(buildEvent({ body: { name: 'A', order: 0 } }));
+    const catalog = json(await getCatalog(buildEvent()));
+    expect(catalog.sessions.map((x: any) => x.name)).toEqual(['A', 'B']);
+    expect(catalog.sessions[1].goal).toBe('STRENGTH_HYPERTROPHY');
+    expect(catalog.sessions[1].order).toBe(1);
+  });
+
   it('isole les données entre utilisateurs', async () => {
     await createLocation(buildEvent({ userId: 'alice', body: { name: 'Chez Alice' } }));
     const bob = json(await getCatalog(buildEvent({ userId: 'bob' })));

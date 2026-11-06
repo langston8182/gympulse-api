@@ -8,7 +8,7 @@ import { api, ok } from '../../utils/handler';
 export const handler = api(async ({ userId }) => {
   const [locations, sessions, programs] = await Promise.all([
     LocationModel.find({ userId }).sort({ name: 1 }).lean(),
-    SessionModel.find({ userId }).sort({ updatedAt: -1 }).lean(),
+    SessionModel.find({ userId }).sort({ order: 1, createdAt: 1 }).lean(),
     ProgramModel.find({ userId }).sort({ updatedAt: -1 }).lean(),
   ]);
   return ok({

@@ -60,6 +60,7 @@ export function validateSession(body: Body, partial: boolean) {
     exercises: exercises?.filter((e): e is NonNullable<typeof e> => e !== null),
     locationRefs: c.stringArray(body, 'locationRefs'),
     favorite: c.boolean(body, 'favorite'),
+    order: c.number(body, 'order', { integer: true, min: 0, max: 1_000_000 }) as number | undefined,
   };
   c.done();
   return data;

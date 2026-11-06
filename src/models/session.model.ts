@@ -24,6 +24,7 @@ export interface ISession {
   exercises: ISessionExercise[];
   locationRefs: string[];
   favorite: boolean;
+  order: number;
   isDemo: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -58,6 +59,7 @@ const SessionSchema = new Schema<ISession>(
     exercises: { type: [SessionExerciseSchema], default: [] },
     locationRefs: { type: [String], default: [] },
     favorite: { type: Boolean, default: false },
+    order: { type: Number, default: 0, min: 0 },
     isDemo: { type: Boolean, default: false },
   },
   { timestamps: true, collection: 'sessions' },
