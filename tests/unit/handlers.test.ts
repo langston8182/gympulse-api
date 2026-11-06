@@ -79,7 +79,7 @@ describe('exercises (unit)', () => {
   it('expose la bibliothèque fournie', async () => {
     const res = await getLibrary(event());
     const list = JSON.parse(res.body as string);
-    expect(list).toHaveLength(38);
+    expect(list).toHaveLength(40);
     expect(list[0]).toHaveProperty('ref', 'bench_db');
   });
 });

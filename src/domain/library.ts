@@ -43,6 +43,8 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   ex('ohp_bb', 'Développé militaire barre', ['SHOULDERS', 'TRICEPS'], ['BARBELL', 'SQUAT_RACK']),
   ex('ohp_db', 'Développé épaules haltères', ['SHOULDERS', 'TRICEPS'], ['DUMBBELL', 'BENCH'], PER),
   ex('lateral_raise', 'Élévations latérales', ['SHOULDERS'], ['DUMBBELL'], { ...PER, notes: "Monter jusqu'à l'horizontale, coudes légèrement fléchis." }),
+  ex('rear_fly_db', 'Oiseau haltères', ['SHOULDERS', 'TRAPS', 'BACK'], ['DUMBBELL'], { ...PER, notes: 'Buste penché, dos plat : écarter les bras sur les côtés en serrant les omoplates, coudes légèrement fléchis.' }),
+  ex('pullover_db', 'Pull-over haltère', ['BACK', 'CHEST', 'TRICEPS'], ['DUMBBELL', 'BENCH'], { notes: "Un seul haltère tenu à deux mains : descendre derrière la tête en gardant les bras presque tendus, puis revenir au-dessus de la poitrine." }),
   ex('face_pull', 'Face pull', ['SHOULDERS', 'TRAPS'], ['CABLE']),
   ex('dips', 'Dips', ['TRICEPS', 'CHEST'], ['DIP_STATION'], { notes: 'Charge = lest ajouté au poids du corps.' }),
   ex('triceps_pushdown', 'Extension triceps à la poulie', ['TRICEPS'], ['CABLE']),
