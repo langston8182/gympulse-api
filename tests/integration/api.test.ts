@@ -110,6 +110,13 @@ describe('catalogue (intégration)', () => {
     expect(json(await getCatalog(buildEvent({ userId: 'bob' }))).locations).toHaveLength(1);
   });
 
+  it("mémorise la copie personnalisée d'un exercice de la bibliothèque", async () => {
+    const copy = json(await createExercise(buildEvent({ body: { name: 'Curl marteau perso', basedOn: 'hammer_curl' } })));
+    expect(copy.basedOn).toBe('hammer_curl');
+    const plain = json(await createExercise(buildEvent({ body: { name: 'Autre exo' } })));
+    expect(plain.basedOn).toBeNull();
+  });
+
   it('isole les données entre utilisateurs', async () => {
     await createLocation(buildEvent({ userId: 'alice', body: { name: 'Chez Alice' } }));
     const bob = json(await getCatalog(buildEvent({ userId: 'bob' })));

@@ -15,6 +15,7 @@ export function validateExercise(body: Body, partial: boolean) {
     loadMode: c.enum(body, 'loadMode', LOAD_MODES),
     imageUri: c.nullableString(body, 'imageUri', 500),
     notes: c.string(body, 'notes', { max: 2000 }),
+    basedOn: c.nullableString(body, 'basedOn', 64),
   };
   c.done();
   return data;

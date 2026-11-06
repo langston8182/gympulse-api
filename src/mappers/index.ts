@@ -13,6 +13,7 @@ export function exerciseToDto(doc: any) {
     loadMode: doc.loadMode,
     imageUri: doc.imageUri ?? null,
     notes: doc.notes ?? '',
+    basedOn: doc.basedOn ?? null,
     isDemo: !!doc.isDemo,
     createdAt: iso(doc.createdAt),
     updatedAt: iso(doc.updatedAt),

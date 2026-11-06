@@ -11,6 +11,8 @@ export interface IExercise {
   loadMode: string;
   imageUri?: string | null;
   notes: string;
+  /** Clé de l'exercice de la bibliothèque dont celui-ci est une copie personnalisée. */
+  basedOn?: string | null;
   isDemo: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -26,6 +28,7 @@ const ExerciseSchema = new Schema<IExercise>(
     loadMode: { type: String, enum: LOAD_MODES, default: 'TOTAL' },
     imageUri: { type: String, maxlength: 500, default: null },
     notes: { type: String, maxlength: 2000, default: '' },
+    basedOn: { type: String, maxlength: 64, default: null },
     isDemo: { type: Boolean, default: false },
   },
   { timestamps: true, collection: 'exercises' },
