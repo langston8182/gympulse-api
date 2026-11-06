@@ -1,0 +1,278 @@
+service: gympulse-api
+
+frameworkVersion: '3'
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${opt:region, 'eu-west-3'}
+  stage: ${opt:stage, 'dev'}
+  memorySize: 256
+  timeout: 15
+  environment:
+    MONGODB_URI: ${env:MONGODB_URI}
+    MONGODB_DB_NAME: ${env:MONGODB_DB_NAME, 'gympulse'}
+    # L'en-tête x-user-id (identité factice) n'est accepté qu'en dev, tant que l'authorizer JWT n'est pas branché.
+    ALLOW_DEV_USER_HEADER: ${self:custom.devUserHeader.${self:provider.stage}, 'false'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:3000
+        - http://localhost:5173
+      allowedHeaders:
+        - content-type
+        - x-amz-date
+        - authorization
+        - x-api-key
+        - x-amz-security-token
+        - x-amz-user-agent
+        - x-amzn-trace-id
+        - x-user-id
+      allowedMethods:
+        - OPTIONS
+        - GET
+        - POST
+        - PUT
+        - DELETE
+      allowCredentials: true
+      maxAge: 0
+    # À activer avec un fournisseur JWT (ex. Cognito) puis ajouter `authorizer: { name: jwtAuthorizer }`
+    # à chaque événement httpApi ci-dessous :
+    # authorizers:
+    #   jwtAuthorizer:
+    #     type: jwt
+    #     identitySource: $request.header.Authorization
+    #     issuerUrl: ${env:JWT_ISSUER_URL}
+    #     audience:
+    #       - ${env:JWT_AUDIENCE}
+
+plugins:
+  - serverless-esbuild
+  - serverless-dotenv-plugin
+  - serverless-offline
+
+custom:
+  devUserHeader:
+    dev: 'true'
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node20
+    platform: node
+    exclude:
+      - '@aws-sdk/*'
+
+functions:
+  # --- Santé ---
+  health:
+    handler: src/handlers/health/get.handler
+    events:
+      - httpApi: { path: /v1/health, method: get }
+
+  # --- Exercices ---
+  getExerciseLibrary:
+    handler: src/handlers/exercises/library.handler
+    events:
+      - httpApi: { path: /v1/exercises/library, method: get }
+  createExercise:
+    handler: src/handlers/exercises/create.handler
+    events:
+      - httpApi: { path: /v1/exercises, method: post }
+  getAllExercises:
+    handler: src/handlers/exercises/getAll.handler
+    events:
+      - httpApi: { path: /v1/exercises, method: get }
+  getExerciseById:
+    handler: src/handlers/exercises/getById.handler
+    events:
+      - httpApi: { path: '/v1/exercises/{id}', method: get }
+  updateExercise:
+    handler: src/handlers/exercises/update.handler
+    events:
+      - httpApi: { path: '/v1/exercises/{id}', method: put }
+  deleteExercise:
+    handler: src/handlers/exercises/remove.handler
+    events:
+      - httpApi: { path: '/v1/exercises/{id}', method: delete }
+
+  # --- Séances ---
+  createSession:
+    handler: src/handlers/sessions/create.handler
+    events:
+      - httpApi: { path: /v1/sessions, method: post }
+  getAllSessions:
+    handler: src/handlers/sessions/getAll.handler
+    events:
+      - httpApi: { path: /v1/sessions, method: get }
+  getSessionById:
+    handler: src/handlers/sessions/getById.handler
+    events:
+      - httpApi: { path: '/v1/sessions/{id}', method: get }
+  updateSession:
+    handler: src/handlers/sessions/update.handler
+    events:
+      - httpApi: { path: '/v1/sessions/{id}', method: put }
+  deleteSession:
+    handler: src/handlers/sessions/remove.handler
+    events:
+      - httpApi: { path: '/v1/sessions/{id}', method: delete }
+  duplicateSession:
+    handler: src/handlers/sessions/duplicate.handler
+    events:
+      - httpApi: { path: '/v1/sessions/{id}/duplicate', method: post }
+  setSessionFavorite:
+    handler: src/handlers/sessions/setFavorite.handler
+    events:
+      - httpApi: { path: '/v1/sessions/{id}/favorite', method: put }
+
+  # --- Programmes ---
+  createProgram:
+    handler: src/handlers/programs/create.handler
+    events:
+      - httpApi: { path: /v1/programs, method: post }
+  getAllPrograms:
+    handler: src/handlers/programs/getAll.handler
+    events:
+      - httpApi: { path: /v1/programs, method: get }
+  getProgramById:
+    handler: src/handlers/programs/getById.handler
+    events:
+      - httpApi: { path: '/v1/programs/{id}', method: get }
+  updateProgram:
+    handler: src/handlers/programs/update.handler
+    events:
+      - httpApi: { path: '/v1/programs/{id}', method: put }
+  deleteProgram:
+    handler: src/handlers/programs/remove.handler
+    events:
+      - httpApi: { path: '/v1/programs/{id}', method: delete }
+
+  # --- Lieux ---
+  createLocation:
+    handler: src/handlers/locations/create.handler
+    events:
+      - httpApi: { path: /v1/locations, method: post }
+  getAllLocations:
+    handler: src/handlers/locations/getAll.handler
+    events:
+      - httpApi: { path: /v1/locations, method: get }
+  getLocationById:
+    handler: src/handlers/locations/getById.handler
+    events:
+      - httpApi: { path: '/v1/locations/{id}', method: get }
+  updateLocation:
+    handler: src/handlers/locations/update.handler
+    events:
+      - httpApi: { path: '/v1/locations/{id}', method: put }
+  deleteLocation:
+    handler: src/handlers/locations/remove.handler
+    events:
+      - httpApi: { path: '/v1/locations/{id}', method: delete }
+  linkLocationSessions:
+    handler: src/handlers/locations/link.linkSessions
+    events:
+      - httpApi: { path: '/v1/locations/{id}/sessions', method: put }
+  linkLocationPrograms:
+    handler: src/handlers/locations/link.linkPrograms
+    events:
+      - httpApi: { path: '/v1/locations/{id}/programs', method: put }
+
+  # --- Catalogue (lieux + séances + programmes) ---
+  getCatalog:
+    handler: src/handlers/catalog/get.handler
+    events:
+      - httpApi: { path: /v1/catalog, method: get }
+
+  # --- Séances réalisées ---
+  getAllWorkouts:
+    handler: src/handlers/workouts/getAll.handler
+    events:
+      - httpApi: { path: /v1/workouts, method: get }
+  createWorkout:
+    handler: src/handlers/workouts/create.handler
+    events:
+      - httpApi: { path: /v1/workouts, method: post }
+  getActiveWorkout:
+    handler: src/handlers/workouts/active.getActive
+    events:
+      - httpApi: { path: /v1/workouts/active, method: get }
+  saveActiveWorkout:
+    handler: src/handlers/workouts/active.saveActive
+    events:
+      - httpApi: { path: /v1/workouts/active, method: put }
+  abandonActiveWorkout:
+    handler: src/handlers/workouts/active.abandonActive
+    events:
+      - httpApi: { path: /v1/workouts/active, method: delete }
+  completeActiveWorkout:
+    handler: src/handlers/workouts/complete.handler
+    events:
+      - httpApi: { path: /v1/workouts/active/complete, method: post }
+  getWorkoutById:
+    handler: src/handlers/workouts/getById.handler
+    events:
+      - httpApi: { path: '/v1/workouts/{id}', method: get }
+  updateWorkout:
+    handler: src/handlers/workouts/update.handler
+    events:
+      - httpApi: { path: '/v1/workouts/{id}', method: put }
+  deleteWorkout:
+    handler: src/handlers/workouts/remove.handler
+    events:
+      - httpApi: { path: '/v1/workouts/{id}', method: delete }
+  getWorkoutRecords:
+    handler: src/handlers/workouts/records.handler
+    events:
+      - httpApi: { path: '/v1/workouts/{id}/records', method: get }
+
+  # --- Statistiques ---
+  getDashboardStats:
+    handler: src/handlers/stats/dashboard.handler
+    events:
+      - httpApi: { path: /v1/stats/dashboard, method: get }
+  getExerciseStats:
+    handler: src/handlers/stats/exercise.handler
+    events:
+      - httpApi: { path: '/v1/stats/exercises/{ref}', method: get }
+  getLastPerformances:
+    handler: src/handlers/stats/lastPerformance.getAll
+    events:
+      - httpApi: { path: /v1/stats/last-performances, method: get }
+  getLastPerformance:
+    handler: src/handlers/stats/lastPerformance.getOne
+    events:
+      - httpApi: { path: '/v1/stats/last-performance/{ref}', method: get }
+
+  # --- Préférences ---
+  getPreferences:
+    handler: src/handlers/preferences/get.handler
+    events:
+      - httpApi: { path: /v1/preferences, method: get }
+  updatePreferences:
+    handler: src/handlers/preferences/update.handler
+    events:
+      - httpApi: { path: /v1/preferences, method: put }
+
+  # --- Données de démonstration ---
+  getDemoStatus:
+    handler: src/handlers/demo/demo.status
+    events:
+      - httpApi: { path: /v1/demo, method: get }
+  seedDemo:
+    handler: src/handlers/demo/demo.seed
+    timeout: 25
+    events:
+      - httpApi: { path: /v1/demo, method: post }
+  deleteDemo:
+    handler: src/handlers/demo/demo.remove
+    events:
+      - httpApi: { path: /v1/demo, method: delete }
+
+package:
+  individually: true
+  patterns:
+    - '!tests/**'
+    - '!README.md'

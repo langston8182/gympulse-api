@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+  pre_build:
+    commands:
+      - npm ci
+      - |
+        SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id "$SECRET_NAME" --region "$AWS_REGION_DEPLOY" --query SecretString --output text)
+        export MONGODB_URI=$(node -e "const d=JSON.parse(process.argv[1]); console.log(d['$SECRET_ENV_KEY'].MONGO_URI)" "$SECRET_JSON")
+        export MONGODB_DB_NAME=$(node -e "const d=JSON.parse(process.argv[1]); console.log(d['$SECRET_ENV_KEY'].DB_NAME)" "$SECRET_JSON")
+  build:
+    commands:
+      - echo "Déploiement du stage $STAGE"
+      - npm run test:unit
+      - npx serverless deploy --stage $STAGE --region $AWS_REGION_DEPLOY --verbose
