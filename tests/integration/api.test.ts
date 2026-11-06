@@ -3,6 +3,7 @@ import { connectToDatabase } from '../../src/config/db';
 
 import { handler as createExercise } from '../../src/handlers/exercises/create';
 import { handler as deleteExercise } from '../../src/handlers/exercises/remove';
+import { handler as deleteAccount } from '../../src/handlers/account/remove';
 import { handler as createLocation } from '../../src/handlers/locations/create';
 import { handler as deleteLocation } from '../../src/handlers/locations/remove';
 import { linkSessions } from '../../src/handlers/locations/link';
@@ -90,6 +91,23 @@ describe('catalogue (intégration)', () => {
     expect(catalog.sessions.map((x: any) => x.name)).toEqual(['A', 'B']);
     expect(catalog.sessions[1].goal).toBe('STRENGTH_HYPERTROPHY');
     expect(catalog.sessions[1].order).toBe(1);
+  });
+
+  it("supprime toutes les données de l'utilisateur sans toucher aux autres, après confirmation", async () => {
+    await createLocation(buildEvent({ userId: 'alice', body: { name: 'Chez Alice' } }));
+    await createExercise(buildEvent({ userId: 'alice', body: { name: 'Exo Alice' } }));
+    await createLocation(buildEvent({ userId: 'bob', body: { name: 'Chez Bob' } }));
+
+    const refused = await deleteAccount(buildEvent({ userId: 'alice', body: {} }));
+    expect(refused.statusCode).toBe(400);
+    expect(json(await getCatalog(buildEvent({ userId: 'alice' }))).locations).toHaveLength(1);
+
+    const res = await deleteAccount(buildEvent({ userId: 'alice', body: { confirm: true } }));
+    expect(res.statusCode).toBe(200);
+    expect(json(res).deleted.locations).toBe(1);
+    expect(json(res).accountDeleted).toBe(false);
+    expect(json(await getCatalog(buildEvent({ userId: 'alice' }))).locations).toEqual([]);
+    expect(json(await getCatalog(buildEvent({ userId: 'bob' }))).locations).toHaveLength(1);
   });
 
   it('isole les données entre utilisateurs', async () => {

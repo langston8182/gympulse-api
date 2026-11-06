@@ -11,6 +11,14 @@ provider:
   stage: ${opt:stage, 'dev'}
   memorySize: 256
   timeout: 15
+  iam:
+    role:
+      statements:
+        # Suppression de compte (DELETE /v1/account) : retire l'utilisateur du pool Cognito du stage.
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminDeleteUser
+          Resource: arn:aws:cognito-idp:${aws:region}:${aws:accountId}:userpool/${self:custom.cognito.${self:provider.stage}.userPoolId, '*'}
   environment:
     MONGODB_URI: ${env:MONGODB_URI}
     MONGODB_DB_NAME: ${env:MONGODB_DB_NAME, 'gympulse'}
@@ -266,6 +274,13 @@ functions:
     handler: src/handlers/preferences/update.handler
     events:
       - httpApi: { path: /v1/preferences, method: put }
+
+  # --- Compte ---
+  deleteAccount:
+    handler: src/handlers/account/remove.handler
+    timeout: 25
+    events:
+      - httpApi: { path: /v1/account, method: delete }
 
   # --- Données de démonstration ---
   getDemoStatus:

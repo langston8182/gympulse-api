@@ -7,6 +7,8 @@ import { HttpError, isValidObjectId } from './validation';
 export interface ApiContext {
   event: APIGatewayProxyEventV2;
   userId: string;
+  /** Nom d'utilisateur Cognito du jeton (absent avec l'en-tête de développement). */
+  username?: string;
   params: Record<string, string>;
   query: Record<string, string>;
   /** Corps JSON désérialisé (objet vide si absent). */
@@ -15,7 +17,7 @@ export interface ApiContext {
 
 type ApiFn = (ctx: ApiContext) => Promise<APIGatewayProxyStructuredResultV2>;
 
-type AccessTokenVerifier = { verify(token: string): Promise<{ sub: string }> };
+type AccessTokenVerifier = { verify(token: string): Promise<{ sub: string; username?: string }> };
 let cachedVerifier: { key: string; verifier: AccessTokenVerifier } | null = null;
 
 /** Vérificateur de jetons d'accès Cognito, créé à la demande (les JWKS sont mis en cache par la bibliothèque). */
@@ -30,16 +32,21 @@ function cognitoVerifier(): AccessTokenVerifier | null {
   return cachedVerifier.verifier;
 }
 
+export interface Identity {
+  userId: string;
+  username?: string;
+}
+
 /**
- * Identifiant de l'utilisateur, dans l'ordre :
+ * Identité de l'appelant, dans l'ordre :
  * 1. claim `sub` d'un JWT déjà validé par un authorizer API Gateway ;
  * 2. `Authorization: Bearer <jeton d'accès Cognito>`, vérifié ici (signature, émetteur, client, expiration) ;
  * 3. en dev uniquement (ALLOW_DEV_USER_HEADER=true), l'en-tête `x-user-id`.
  */
-export async function resolveUserId(event: APIGatewayProxyEventV2): Promise<string> {
+export async function resolveIdentity(event: APIGatewayProxyEventV2): Promise<Identity> {
   const claims = (event.requestContext as any)?.authorizer?.jwt?.claims;
   const sub = claims?.sub;
-  if (typeof sub === 'string' && sub) return sub;
+  if (typeof sub === 'string' && sub) return { userId: sub, username: typeof claims.username === 'string' ? claims.username : undefined };
 
   const authorization = event.headers?.authorization ?? event.headers?.Authorization;
   const bearer = authorization?.match(/^Bearer\s+(\S+)$/i)?.[1];
@@ -47,7 +54,8 @@ export async function resolveUserId(event: APIGatewayProxyEventV2): Promise<stri
     const verifier = cognitoVerifier();
     if (!verifier) throw new HttpError(401, 'Authentification requise');
     try {
-      return (await verifier.verify(bearer)).sub;
+      const payload = await verifier.verify(bearer);
+      return { userId: payload.sub, username: payload.username };
     } catch {
       throw new HttpError(401, 'Jeton invalide ou expiré');
     }
@@ -55,9 +63,14 @@ export async function resolveUserId(event: APIGatewayProxyEventV2): Promise<stri
 
   if (process.env.ALLOW_DEV_USER_HEADER === 'true') {
     const header = event.headers?.['x-user-id'];
-    if (header && header.length <= 128) return header;
+    if (header && header.length <= 128) return { userId: header };
   }
   throw new HttpError(401, 'Authentification requise');
+}
+
+/** Identifiant de l'utilisateur (voir {@link resolveIdentity}). */
+export async function resolveUserId(event: APIGatewayProxyEventV2): Promise<string> {
+  return (await resolveIdentity(event)).userId;
 }
 
 function parseBody(event: APIGatewayProxyEventV2): Record<string, any> {
@@ -80,12 +93,13 @@ export function api(fn: ApiFn, options: { auth?: boolean; db?: boolean } = {}) {
   const auth = options.auth !== false;
   return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyStructuredResultV2> => {
     try {
-      const userId = auth ? await resolveUserId(event) : '';
+      const identity: Identity = auth ? await resolveIdentity(event) : { userId: '' };
       const body = parseBody(event);
       if (options.db !== false) await connectToDatabase();
       return await fn({
         event,
-        userId,
+        userId: identity.userId,
+        username: identity.username,
         params: (event.pathParameters ?? {}) as Record<string, string>,
         query: (event.queryStringParameters ?? {}) as Record<string, string>,
         body,
