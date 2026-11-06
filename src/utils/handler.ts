@@ -1,4 +1,5 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { connectToDatabase } from '../config/db';
 import { error, success } from './response';
 import { HttpError, isValidObjectId } from './validation';
@@ -14,14 +15,43 @@ export interface ApiContext {
 
 type ApiFn = (ctx: ApiContext) => Promise<APIGatewayProxyStructuredResultV2>;
 
+type AccessTokenVerifier = { verify(token: string): Promise<{ sub: string }> };
+let cachedVerifier: { key: string; verifier: AccessTokenVerifier } | null = null;
+
+/** Vérificateur de jetons d'accès Cognito, créé à la demande (les JWKS sont mis en cache par la bibliothèque). */
+function cognitoVerifier(): AccessTokenVerifier | null {
+  const userPoolId = process.env.COGNITO_USER_POOL_ID;
+  const clientId = process.env.COGNITO_CLIENT_ID;
+  if (!userPoolId || !clientId) return null;
+  const key = `${userPoolId}/${clientId}`;
+  if (cachedVerifier?.key !== key) {
+    cachedVerifier = { key, verifier: CognitoJwtVerifier.create({ userPoolId, clientId, tokenUse: 'access' }) };
+  }
+  return cachedVerifier.verifier;
+}
+
 /**
- * Identifiant de l'utilisateur : claim `sub` du JWT validé par l'authorizer API Gateway.
- * En dev uniquement (ALLOW_DEV_USER_HEADER=true), l'en-tête `x-user-id` est accepté.
+ * Identifiant de l'utilisateur, dans l'ordre :
+ * 1. claim `sub` d'un JWT déjà validé par un authorizer API Gateway ;
+ * 2. `Authorization: Bearer <jeton d'accès Cognito>`, vérifié ici (signature, émetteur, client, expiration) ;
+ * 3. en dev uniquement (ALLOW_DEV_USER_HEADER=true), l'en-tête `x-user-id`.
  */
-export function resolveUserId(event: APIGatewayProxyEventV2): string {
+export async function resolveUserId(event: APIGatewayProxyEventV2): Promise<string> {
   const claims = (event.requestContext as any)?.authorizer?.jwt?.claims;
   const sub = claims?.sub;
   if (typeof sub === 'string' && sub) return sub;
+
+  const authorization = event.headers?.authorization ?? event.headers?.Authorization;
+  const bearer = authorization?.match(/^Bearer\s+(\S+)$/i)?.[1];
+  if (bearer) {
+    const verifier = cognitoVerifier();
+    if (!verifier) throw new HttpError(401, 'Authentification requise');
+    try {
+      return (await verifier.verify(bearer)).sub;
+    } catch {
+      throw new HttpError(401, 'Jeton invalide ou expiré');
+    }
+  }
 
   if (process.env.ALLOW_DEV_USER_HEADER === 'true') {
     const header = event.headers?.['x-user-id'];
@@ -50,7 +80,7 @@ export function api(fn: ApiFn, options: { auth?: boolean; db?: boolean } = {}) {
   const auth = options.auth !== false;
   return async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyStructuredResultV2> => {
     try {
-      const userId = auth ? resolveUserId(event) : '';
+      const userId = auth ? await resolveUserId(event) : '';
       const body = parseBody(event);
       if (options.db !== false) await connectToDatabase();
       return await fn({

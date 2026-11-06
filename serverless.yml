@@ -16,6 +16,9 @@ provider:
     MONGODB_DB_NAME: ${env:MONGODB_DB_NAME, 'gympulse'}
     # L'en-tête x-user-id (identité factice) n'est accepté qu'en dev, tant que l'authorizer JWT n'est pas branché.
     ALLOW_DEV_USER_HEADER: ${self:custom.devUserHeader.${self:provider.stage}, 'false'}
+    # Jetons d'accès Cognito (identifiants publics, non secrets). Vide = connexion Cognito désactivée pour ce stage.
+    COGNITO_USER_POOL_ID: ${self:custom.cognito.${self:provider.stage}.userPoolId, ''}
+    COGNITO_CLIENT_ID: ${self:custom.cognito.${self:provider.stage}.clientId, ''}
   httpApi:
     cors:
       allowedOrigins:
@@ -56,6 +59,11 @@ plugins:
 custom:
   devUserHeader:
     dev: 'true'
+  cognito:
+    dev:
+      userPoolId: eu-west-3_auhSvINhh
+      clientId: 4kde7q4ski01ie894ataj9coii
+    # prod: à renseigner avec le pool de production (userPoolId / clientId).
   esbuild:
     bundle: true
     minify: false

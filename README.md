@@ -31,7 +31,7 @@ infra/                # buildspecs CodeBuild
 
 - **Identifiants** : chaque ressource expose `ref` (ObjectId en chaîne). Les références croisées sont des chaînes opaques ; un `exerciseRef` est soit une clé de la bibliothèque fournie (`bench_db`…), soit le `ref` d'un exercice de l'utilisateur.
 - **Isolation** : toutes les données sont filtrées par utilisateur (`userId`).
-- **Authentification** : `userId` = claim `sub` du JWT validé par l'authorizer API Gateway. En stage `dev` uniquement, l'en-tête `x-user-id` est accepté (`ALLOW_DEV_USER_HEADER`). Hors dev, sans authorizer, toutes les routes (sauf `/v1/health`) répondent `401`. Voir la section commentée `authorizers` de `serverless.yml`.
+- **Authentification** : `userId` = claim `sub` du **jeton d'accès Cognito** (`Authorization: Bearer …`), vérifié dans la lambda (signature, émetteur, client, expiration) avec `aws-jwt-verify`. Le pool et le client se règlent par stage dans `custom.cognito` de `serverless.yml` (variables `COGNITO_USER_POOL_ID` et `COGNITO_CLIENT_ID`). En stage `dev` uniquement, l'en-tête `x-user-id` reste accepté (`ALLOW_DEV_USER_HEADER`). Sans identifiant valide, toutes les routes (sauf `/v1/health`) répondent `401`. Un authorizer API Gateway reste possible (le claim `sub` est alors lu en premier).
 - **Erreurs** : `{ "message": string, "details"?: any }` avec 400 / 401 / 404 / 409 / 500.
 - **Horodatages** : millisecondes epoch (comme l'app). `createdAt` / `updatedAt` en ISO 8601.
 - **Charges** : toujours en kg (la conversion lb est côté app).
@@ -85,7 +85,7 @@ cp .env.example .env   # renseigner MONGODB_URI
 |---|---|
 | `MONGODB_URI` | URI MongoDB Atlas |
 | `MONGODB_DB_NAME` | Base (`gympulse` par défaut) |
-| `JWT_ISSUER_URL`, `JWT_AUDIENCE` | Authorizer JWT (à brancher, voir `serverless.yml`) |
+| `COGNITO_USER_POOL_ID`, `COGNITO_CLIENT_ID` | Pool et client Cognito du stage (voir `custom.cognito`) |
 
 ## Développement, tests, déploiement
 
