@@ -72,6 +72,7 @@ export const privacy = async () =>
   <li>Authentification : Amazon Cognito (AWS), avec Google comme fournisseur de connexion.</li>
   <li>API et traitement : AWS (région Europe, Paris).</li>
   <li>Base de données : MongoDB Atlas.</li>
+  <li>Carte des lieux : fonds de carte OpenStreetMap, chargés depuis openstreetmap.org uniquement lorsque vous ouvrez l'écran d'édition d'un lieu (votre adresse IP et la zone affichée leur sont alors transmises).</li>
 </ul>
 <p>Ces prestataires traitent les données pour notre compte uniquement.</p>
 
