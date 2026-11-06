@@ -59,12 +59,12 @@ custom:
   esbuild:
     bundle: true
     minify: false
-    sourcemap: true
+    sourcemap: false
     target: node20
     platform: node
     # 46 fonctions packagées individuellement : en parallèle illimité, esbuild dépasse la mémoire
     # d'un build CodeBuild SMALL (3 Go) et meurt avec "write EPIPE".
-    concurrency: 3
+    concurrency: 1
     exclude:
       - '@aws-sdk/*'
 
@@ -275,7 +275,7 @@ functions:
       - httpApi: { path: /v1/demo, method: delete }
 
 package:
-  individually: true
+  individually: false
   patterns:
     - '!tests/**'
     - '!README.md'
