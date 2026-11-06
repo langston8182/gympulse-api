@@ -277,6 +277,24 @@ functions:
     events:
       - httpApi: { path: /v1/preferences, method: put }
 
+  # --- Pages publiques (Google, Google Play) ---
+  siteHome:
+    handler: src/handlers/site/pages.home
+    events:
+      - httpApi: { path: /, method: get }
+  sitePrivacy:
+    handler: src/handlers/site/pages.privacy
+    events:
+      - httpApi: { path: /confidentialite, method: get }
+  siteTerms:
+    handler: src/handlers/site/pages.terms
+    events:
+      - httpApi: { path: /conditions, method: get }
+  siteDeleteAccount:
+    handler: src/handlers/site/pages.deleteAccount
+    events:
+      - httpApi: { path: /suppression-compte, method: get }
+
   # --- Compte ---
   deleteAccount:
     handler: src/handlers/account/remove.handler

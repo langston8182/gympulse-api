@@ -56,6 +56,7 @@ infra/                # buildspecs CodeBuild
 | GET, PUT, DELETE | `/locations/{id}` | Nettoie les liens et le choix manuel |
 | PUT | `/locations/{id}/sessions` | `{sessionRefs}` remplace les séances liées |
 | PUT | `/locations/{id}/programs` | `{programRefs}` remplace les programmes liés |
+| GET | `/`, `/confidentialite`, `/conditions`, `/suppression-compte` | Pages publiques HTML (sans authentification), exigées par Google (écran de consentement) et Google Play |
 | DELETE | `/account` | Suppression définitive du compte : `{confirm: true}` ; efface toutes les données puis l'utilisateur Cognito (IAM `cognito-idp:AdminDeleteUser`) |
 | GET | `/catalog` | `{locations, sessions, programs}` (= `CatalogDto`) |
 | GET | `/workouts` | Historique terminé, récent d'abord (`limit`, `before`, `from`, `to`) |
