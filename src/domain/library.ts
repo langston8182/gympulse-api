@@ -58,7 +58,7 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   ex('hammer_curl', 'Curl marteau', ['BICEPS', 'FOREARMS'], ['DUMBBELL'], PER),
   ex('curl_cable', 'Curl à la poulie', ['BICEPS'], ['CABLE']),
   ex('hammer_curl_cable', 'Curl marteau à la poulie', ['BICEPS', 'FOREARMS'], ['CABLE'], { notes: 'Corde en prise neutre, coudes collés au corps.' }),
-  ex('row_cable_knee_bench', 'Tirage un bras à la poulie, genou sur banc', ['BACK', 'BICEPS'], ['CABLE', 'BENCH'], { notes: "Un genou et une main sur le banc, charge d'un seul bras, répétitions par bras." }),
+  ex('lateral_raise_cable', 'Élévation latérale à la poulie', ['SHOULDERS'], ['CABLE'], { notes: 'Poulie basse, bras opposé : monter le bras jusqu\'à l\'horizontale, coude légèrement fléchi.' }),
   ex('squat_bb', 'Squat barre', ['QUADRICEPS', 'GLUTES', 'LOWER_BACK'], ['BARBELL', 'SQUAT_RACK'], { notes: 'Descendre au moins à la parallèle, gainage maximal.' }),
   ex('goblet_squat', 'Goblet squat', ['QUADRICEPS', 'GLUTES'], ['DUMBBELL']),
   ex('bulgarian_split', 'Squat bulgare haltères', ['QUADRICEPS', 'GLUTES'], ['DUMBBELL', 'BENCH'], PER),
