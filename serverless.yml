@@ -71,7 +71,9 @@ custom:
     dev:
       userPoolId: eu-west-3_auhSvINhh
       clientId: 4kde7q4ski01ie894ataj9coii
-    # prod: à renseigner avec le pool de production (userPoolId / clientId).
+    prod:
+      userPoolId: eu-west-3_oWnbhRZcN
+      clientId: 7stqfkerbqboff8q2khp4cskr1
   esbuild:
     bundle: true
     minify: false
