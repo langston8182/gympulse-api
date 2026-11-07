@@ -46,6 +46,7 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   ex('rear_fly_db', 'Oiseau haltères', ['SHOULDERS', 'TRAPS', 'BACK'], ['DUMBBELL'], { ...PER, notes: 'Buste penché, dos plat : écarter les bras sur les côtés en serrant les omoplates, coudes légèrement fléchis.' }),
   ex('pullover_db', 'Pull-over haltère', ['BACK', 'CHEST', 'TRICEPS'], ['DUMBBELL', 'BENCH'], { notes: "Un seul haltère tenu à deux mains : descendre derrière la tête en gardant les bras presque tendus, puis revenir au-dessus de la poitrine." }),
   ex('face_pull', 'Face pull', ['SHOULDERS', 'TRAPS'], ['CABLE']),
+  ex('butterfly', 'Butterfly (pec deck)', ['CHEST', 'SHOULDERS'], ['MACHINE'], { notes: 'Dos collé au dossier, avant-bras sur les coussins : rapprocher les bras devant la poitrine sans verrouiller les coudes.' }),
   ex('chest_press', 'Chest press (machine)', ['CHEST', 'TRICEPS', 'SHOULDERS'], ['MACHINE'], { notes: 'Dos collé au dossier, poignées au niveau des pectoraux : pousser sans verrouiller les coudes.' }),
   ex('triceps_kickback', 'Kickback triceps haltère', ['TRICEPS'], ['DUMBBELL', 'BENCH'], { notes: "Un bras à la fois, buste penché : coude collé au corps, tendre l'avant-bras vers l'arrière. Charge d'un seul haltère." }),
   ex('overhead_triceps_ext_db', 'Extension triceps au-dessus de la tête', ['TRICEPS'], ['DUMBBELL'], { notes: "Un haltère tenu à deux mains (extension nuque) : coudes serrés, descendre derrière la tête puis tendre les bras." }),
