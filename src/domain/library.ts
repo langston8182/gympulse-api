@@ -57,6 +57,7 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   ex('pullup', 'Tractions', ['BACK', 'BICEPS'], ['PULL_UP_BAR'], { notes: 'Charge = lest ajouté au poids du corps.' }),
   ex('lat_pulldown', 'Tirage vertical', ['BACK', 'BICEPS'], ['CABLE']),
   ex('cable_row', 'Tirage horizontal', ['BACK', 'BICEPS'], ['CABLE']),
+  ex('machine_row_unilateral', 'Tirage horizontal machine (un bras)', ['BACK', 'BICEPS'], ['MACHINE'], { notes: "Aussi appelé rowing unilatéral à la machine (type Hammer Strength) : poitrine contre le support, tirer la poignée vers la hanche, répétitions par bras." }),
   ex('row_bb', 'Rowing barre', ['BACK', 'BICEPS', 'LOWER_BACK'], ['BARBELL']),
   ex('row_db', 'Rowing haltère unilatéral', ['BACK', 'BICEPS'], ['DUMBBELL', 'BENCH'], { notes: "Charge d'un seul haltère, répétitions par bras." }),
   ex('deadlift', 'Soulevé de terre', ['HAMSTRINGS', 'GLUTES', 'LOWER_BACK', 'BACK'], ['BARBELL']),

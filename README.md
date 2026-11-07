@@ -43,7 +43,7 @@ infra/                # buildspecs CodeBuild
 | Méthode | Route | Description |
 |---|---|---|
 | GET | `/health` | Santé (sans auth) |
-| GET | `/exercises/library` | Bibliothèque fournie (45 exercices, statique) |
+| GET | `/exercises/library` | Bibliothèque fournie (46 exercices, statique) |
 | GET, POST | `/exercises` | Exercices de l'utilisateur |
 | GET, PUT, DELETE | `/exercises/{id}` | `DELETE` → 409 `{sessionCount}` si utilisé, sauf `?force=true` |
 | GET, POST | `/sessions` | Séances |
