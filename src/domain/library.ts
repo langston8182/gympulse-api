@@ -49,6 +49,7 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   ex('butterfly', 'Butterfly (pec deck)', ['CHEST', 'SHOULDERS'], ['MACHINE'], { notes: 'Dos collé au dossier, avant-bras sur les coussins : rapprocher les bras devant la poitrine sans verrouiller les coudes.' }),
   ex('chest_press', 'Chest press (machine)', ['CHEST', 'TRICEPS', 'SHOULDERS'], ['MACHINE'], { notes: 'Dos collé au dossier, poignées au niveau des pectoraux : pousser sans verrouiller les coudes.' }),
   ex('triceps_kickback', 'Kickback triceps haltère', ['TRICEPS'], ['DUMBBELL', 'BENCH'], { notes: "Un bras à la fois, buste penché : coude collé au corps, tendre l'avant-bras vers l'arrière. Charge d'un seul haltère." }),
+  ex('triceps_kickback_cable', 'Kickback triceps à la poulie', ['TRICEPS'], ['CABLE'], { notes: "Poulie basse, un bras à la fois, buste penché : coude collé au corps, tendre l'avant-bras vers l'arrière." }),
   ex('overhead_triceps_ext_db', 'Extension triceps au-dessus de la tête', ['TRICEPS'], ['DUMBBELL'], { notes: "Un haltère tenu à deux mains (extension nuque) : coudes serrés, descendre derrière la tête puis tendre les bras." }),
   ex('dips', 'Dips', ['TRICEPS', 'CHEST'], ['DIP_STATION'], { notes: 'Charge = lest ajouté au poids du corps.' }),
   ex('triceps_pushdown', 'Extension triceps à la poulie', ['TRICEPS'], ['CABLE']),
