@@ -73,6 +73,7 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   ex('rdl_bb', 'Soulevé de terre roumain', ['HAMSTRINGS', 'GLUTES', 'LOWER_BACK'], ['BARBELL']),
   ex('leg_press', 'Presse à cuisses', ['QUADRICEPS', 'GLUTES'], ['LEG_PRESS']),
   ex('lunges_db', 'Fentes marchées haltères', ['QUADRICEPS', 'GLUTES'], ['DUMBBELL'], PER),
+  ex('leg_extension', 'Leg extension (extension de jambes)', ['QUADRICEPS'], ['MACHINE'], { notes: 'Assis, dos au dossier, boudin sur le bas des tibias : tendre les jambes sans verrouiller brutalement les genoux, puis redescendre lentement.' }),
   ex('leg_curl', 'Leg curl allongé', ['HAMSTRINGS'], ['MACHINE']),
   ex('hip_thrust', 'Hip thrust', ['GLUTES', 'HAMSTRINGS'], ['BARBELL', 'BENCH']),
   ex('calf_raise', 'Mollets debout', ['CALVES'], ['MACHINE']),
